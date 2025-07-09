@@ -1,0 +1,44 @@
+{% extends 'dashboard/layout.html' %} {% load static %} {% block content %}
+
+<h1>Movies</h1>
+
+<form method="get" class="search-form">
+  <input
+    type="text"
+    name="q"
+    placeholder="Search movies..."
+    value="{{ request.GET.q }}"
+  />
+  <button type="submit">Search</button>
+</form>
+
+{% for movie in movies %}
+<div class="movie-card">
+  {% if movie.poster %}
+  <img
+    class="movie-poster"
+    src="{{ movie.poster.url }}"
+    alt="{{ movie.title }}"
+  />
+  {% else %}
+  <img
+    class="movie-poster"
+    src="{% static 'images/default_poster.jpg' %}"
+    alt="No Poster"
+  />
+  {% endif %}
+
+  <div class="movie-info">
+    <h2>{{ movie.title|upper }}</h2>
+    <p>
+      <strong>Genre:</strong> {{ movie.genre }} | <strong>Duration:</strong>
+      {{ movie.duration }} min
+    </p>
+    <p><strong>Release Date:</strong> {{ movie.release_date }}</p>
+    <p>{{ movie.description|truncatewords:25 }}</p>
+    <a href="{% url 'dashboard:showtime-list' movie.id %}">View Showtimes →</a>
+  </div>
+</div>
+{% empty %}
+<p>No movies available.</p>
+{% endfor %} {% endblock %}

@@ -1,0 +1,33 @@
+{% extends 'dashboard/layout.html' %} {% block content %}
+<h1>Showtimes for "{{ movie.title }}"</h1>
+
+{% if showtimes %}
+<div class="card-container">
+  {% for showtime in showtimes %}
+  <div class="showtime-card">
+    <p>{{ showtime.starting_time|date:"D, M d, Y" }}</p>
+    <p style="margin: 5px 0 10px">
+      Time: {{ showtime.starting_time|time:"h:i A" }}
+    </p>
+    <p>Available Seats: {{ showtime.available_seats }}</p>
+    <div style="margin: 25px 0 10px">
+      {% if showtime.available_seats > 0 %}
+      <a href="{% url 'dashboard:book-seats' showtime.id %}" class="btn"
+        >Book Now</a
+      >
+      {% else %}
+      <a class="btn disabled">Sold Out</a>
+      {% endif %}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<p>No showtimes available for this movie.</p>
+{% endif %}
+
+<br />
+<a href="{% url 'dashboard:movie-list' %}" class="linking-link"
+  >← Back to Movies</a
+>
+{% endblock %}

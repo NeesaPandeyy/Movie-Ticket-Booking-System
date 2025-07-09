@@ -1,0 +1,17 @@
+{% extends "dashboard/layout.html" %}
+{% block content %}
+<h1>Confirm Your Booking</h1>
+
+<p>Movie: {{ showtime.movie.title }}</p>
+<p>Showtime: {{ showtime.starting_time|date:"D, M d, Y" }}</p>
+<p>Time: {{ showtime.starting_time|time:"h:i A" }}</p>
+<p>
+  Seats Selected: {% for seat in seats %}{{ seat.seat_number }}{% if not forloop.last %}, {% endif %}{% endfor %}
+</p>
+
+<form method="post" action="{% url 'dashboard:booking-payment-choice' %}">
+  {% csrf_token %}
+  <button type="submit" name="payment_method" value="cash">Pay at Counter (QR Code)</button>
+  <button type="submit" name="payment_method" value="online">Pay Online</button>
+</form>
+{% endblock %}

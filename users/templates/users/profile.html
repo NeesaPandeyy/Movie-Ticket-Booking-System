@@ -1,0 +1,83 @@
+{% extends "dashboard/layout.html" %}
+{% load static %}  
+
+{% block content %}
+    <div class="content-section">
+    <article class="profile content-section">
+        <div class="media">
+            <div class="media-src">
+            <img class="rounded-circle account-img" src="{{ '/media/default.jpg' }}" alt="Profile Image"></div>
+            <div class="media-body">
+                <h2 class="account-heading">{{ user.username }}</h2>
+                <p class="text-secondary">{{ user.email }}</p>
+            </div>
+        </div>
+
+        {% if user == request.user %}
+        <div class="text-right">
+            <a href="{% url 'dashboard:post_create' %}">
+                <button class="btn btn-info">Create Post</button>
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</article>
+
+</div>
+{% if not has_posts %}
+    <p>No posts yet!</p>
+{% endif %}
+{% for post in posts %}
+        <article class="media content-section">
+            <div class="media">
+                <img class="article-img" src="{{ '/media/default.jpg' }}" alt="Profile picture">
+            </div>
+                <div class="media-body">
+                    <div class="article-metadata">
+                        <a class="mr-3" href="{% url 'dashboard:user_account' username=post.author.username %}">
+                            {{ post.author.username }}
+                        </a>
+                        <small class="text-muted">{{ post.display_date }}</small>
+                    </div>
+                   
+                    <h2>
+                        <a class="article-title" href="{% url 'dashboard:post_detail' pk=post.id %}">
+                            {{ post.title }}
+                        </a>
+                    </h2>
+                    <p class="article-content">{{ post.content }}</p>
+                </div>
+           
+        </article>
+       
+    {% endfor %}
+
+        {% if is_paginated %}
+        <div class="pagination">
+            {% if page_obj.has_previous %}
+                <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+            {% else %}
+                <a class="btn btn-outline-info mb-4 disabled" href="#">Previous</a>
+            {% endif %}
+
+            {% for page_num in paginator.page_range %}
+                {% if page_num == page_obj.number %}
+                    <a class="btn btn-info mb-4" href="?page={{ page_num }}">{{ page_num }}</a>
+                {% else %}
+                    <a class="btn btn-outline-info mb-4" href="?page={{ page_num }}">{{ page_num }}</a>
+                {% endif %}
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+                <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.next_page_number }}">Next</a>
+            {% else %}
+                <a class="btn btn-outline-info mb-4 disabled" href="#">Next</a>
+            {% endif %}
+        </div>
+ 
+        {% endif %}
+        
+ 
+</div>
+
+{% endblock content %}

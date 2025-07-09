@@ -1,0 +1,16 @@
+{% extends "dashboard/layout.html" %}
+{% block content %}
+<h1>Show This QR at Counter</h1>
+
+<p><strong>User:</strong> {{ user.get_full_name|default:user.username }}</p>
+<p><strong>Email:</strong> {{ user.email }}</p>
+
+<p><strong>Movie:</strong> {{ booking.showtime.movie.title }}</p>
+<p><strong>Showtime:</strong> {{ booking.showtime.starting_time|date:"D, M d, Y" }}</p>
+<p><strong>Time: </strong>{{ booking.showtime.starting_time|time:"h:i A" }}</p>
+
+<p><strong>Booking ID:</strong> {{ booking.id }}</p>
+<p><strong>Seats:</strong> {{ booking.seats.all|join:", " }}</p>
+
+<img src="data:image/png;base64,{{ qr_code }}" alt="QR Code" class="qr-img" />
+{% endblock %}

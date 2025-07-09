@@ -1,0 +1,39 @@
+{% extends 'dashboard/layout.html' %} {% block content %}
+<style>
+  .login-container {
+    position: absolute;
+    top: 55%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+</style>
+{% if user.is_authenticated %}
+<script>
+  window.location.href = "{% url 'dashboard:movie-list' %}";
+</script>
+{% else %}
+<div class="login-container">
+  <h2>Login</h2>
+  <form method="post">
+    {% csrf_token %}
+    <label for="id_username">Username:</label>
+    {{ form.username }}
+
+    <label for="id_password">Password:</label>
+    {{ form.password }}
+
+    <div class="remember">
+      <input type="checkbox" id="remember" name="remember" />
+      <label for="remember">Remember me</label>
+    </div>
+
+    <button type="submit" class="btn btn-primary">LOGIN</button>
+    <div class="border-top pt-3">
+      <small class="text-muted">
+        Don’t have an account?
+        <a href="{% url 'register' %}">Register Here</a>
+      </small>
+    </div>
+  </form>
+</div>
+{% endif %} {% endblock %}

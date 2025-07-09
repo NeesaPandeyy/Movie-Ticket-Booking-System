@@ -1,0 +1,51 @@
+{% extends "dashboard/layout.html" %} {% block content %}
+<h1>Book Seats for "{{ showtime.movie.title }}"</h1>
+<p>Showtime: {{ showtime.starting_time|date:"D, M d, Y" }}</p>
+<p>Time: {{ showtime.starting_time|time:"h:i A" }}</p>
+<p>Available seats: {{ showtime.available_seats }}</p>
+
+{% if form.non_field_errors %}
+<p style="color: red">{{ form.non_field_errors }}</p>
+{% endif %} {% for field in form %} {% for error in field.errors %}
+<p style="color: red">{{ error }}</p>
+{% endfor %} {% endfor %}
+
+<div class="screen">SCREEN</div>
+
+<form method="POST" action="">
+  {% csrf_token %} {{ form.selected_seats }}
+
+  <div id="seats" style="text-align: center">
+    {% for seat in seats %}
+    <div
+      class="seat {% if seat.is_booked %}booked{% endif %}"
+      data-seat="{{ seat.seat_number }}"
+    >
+      {{ seat.seat_number }}
+    </div>
+    {% if forloop.counter|divisibleby:9 %}<br />{% endif %} {% endfor %}
+  </div>
+
+  <button type="submit">Proceed to Confirm</button>
+</form>
+
+<script>
+  const seats = document.querySelectorAll(".seat:not(.booked)");
+  const selectedSeatsInput = document.getElementById("id_selected_seats");
+  let selectedSeats = [];
+
+  seats.forEach((seat) => {
+    seat.addEventListener("click", () => {
+      const seatNum = seat.getAttribute("data-seat");
+      if (selectedSeats.includes(seatNum)) {
+        selectedSeats = selectedSeats.filter((s) => s !== seatNum);
+        seat.classList.remove("selected");
+      } else {
+        selectedSeats.push(seatNum);
+        seat.classList.add("selected");
+      }
+      selectedSeatsInput.value = selectedSeats.join(",");
+    });
+  });
+</script>
+{% endblock %}

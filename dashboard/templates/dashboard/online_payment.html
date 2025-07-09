@@ -1,0 +1,61 @@
+{% extends "dashboard/layout.html" %}
+{% block content %}
+<h2>Online Payment</h2>
+
+<p><strong>User:</strong> {{ user.get_full_name|default:user.username }}</p>
+<p><strong>Email:</strong> {{ user.email }}</p>
+<p><strong>Movie:</strong> {{ showtime.movie.title }}</p>
+<p><strong>Showtime:</strong> {{ showtime.starting_time|date:"D, M d, Y" }}</p>
+<p><strong>Time:</strong> {{ showtime.starting_time|time:"h:i A" }}</p>
+<p>
+  <strong>Seats:</strong>
+  {% for seat in seats %}{{ seat.seat_number }}{% if not forloop.last %}, {% endif %}{% endfor %}
+</p>
+<p>Total: Rs. {{ total_amount }}</p>
+
+<button id="khalti-pay-btn">Pay with Khalti</button>
+
+<script src="https://khalti.com/static/khalti-checkout.js"></script>
+<script>
+  var config = {
+    publicKey: "test_public_key_f5957c8e65f7415898d6b61de68378d0",
+    productIdentity: "{{ showtime.id }}",
+    productName: "{{ showtime.movie.title }}",
+    productUrl: window.location.origin,
+    eventHandler: {
+      onSuccess(payload) {
+        fetch("{% url 'dashboard:khalti_verify' %}", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": "{{ csrf_token }}"
+          },
+          body: JSON.stringify({
+            token: payload.token,
+            amount: payload.amount
+          })
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            window.location.href = `/booking/qr/${data.booking_id}/`;
+          } else {
+            alert("Payment verification failed: " + JSON.stringify(data.message));
+          }
+        });
+      },
+      onError(error) {
+        console.error(error);
+      },
+      onClose() {
+        console.log("Payment widget closed");
+      }
+    }
+  };
+
+  var checkout = new KhaltiCheckout(config);
+  document.getElementById("khalti-pay-btn").onclick = function () {
+    checkout.show({amount: {{ total_amount_paisa }} });
+  };
+</script>
+{% endblock %}
